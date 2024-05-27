@@ -1,0 +1,6 @@
+{ 
+    "java.project.referencedLibraries": [
+        "Java\\numerico\\lib\\EvalEx-3.2.0.jar",
+        "Java\\numerico\\lib\\qxgenericbean-3.0.0.jar"
+    ],
+}

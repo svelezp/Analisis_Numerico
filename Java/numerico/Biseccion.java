@@ -10,37 +10,6 @@ import co.com.quipux.qxgenericbean.QxGenericBean;
 
 public class Biseccion {
 
-    
-    public static void imprimir(QxGenericBean tabla){
-        
-        String[] columnas = tabla.getString("COLUMNAS").split(", ");
-        StringBuilder formatoImpresion = new StringBuilder();
-        QxGenericBean lastFila = tabla.getListQxBean("FILAS").get(tabla.getInt("MAX_ITERACION"));
-        
-        formatoImpresion.append("\n");
-        for (String columna : columnas){
-            if (lastFila.getString(columna).length() < columna.length()) {
-                formatoImpresion.append(" | %" + columna.length() + "s" );
-            } else {
-                formatoImpresion.append(" | %" + (lastFila.getString(columna).length()+4+ "s" ));
-            }
-        }
-        formatoImpresion.append("\n");
-
-        System.out.printf(formatoImpresion.toString(), (Object[]) columnas);
-
-        for (QxGenericBean fila : tabla.getListQxBean("FILAS")) {
-            System.out.printf(formatoImpresion.toString(), 
-            fila.getInt("ITERACION"), 
-            fila.getString("XI"), 
-            fila.getString("XS"), 
-            fila.getString("XM"), 
-            fila.getString("F(XM)"), 
-            fila.getString("ERROR"));
-        }
-        System.out.println(tabla.getString("MENSAJE"));
-    }
-
     public static QxGenericBean biseccion(String funcion, BigDecimal x0, BigDecimal x1, BigDecimal tol) throws Exception {
         
         QxGenericBean tabla = new QxGenericBean();
@@ -103,7 +72,7 @@ public class Biseccion {
                 tabla.setValue("MENSAJE", "El valor " + xm.toString() + " es una raíz");
                 return tabla;
             } else if (fxm.getNumberValue().abs().compareTo(tol) < 0) {
-                tabla.setValue("MENSAJE", "No se ha logrado encontrar una raíz exacta dentro de la tolerancia seleccionada. El valor " + xf + " es el más cercano");
+                tabla.setValue("MENSAJE", "No se ha logrado encontrar una raíz exacta dentro de la tolerancia seleccionada. El valor " + xf + " es el más aproximado");
                 return tabla;
             } else {
                 tabla.setValue("MENSAJE", "Otro");
@@ -114,11 +83,43 @@ public class Biseccion {
 
     public static void main(String[] args) {
         try {
-            imprimir(biseccion("(e^(7-4x))-(x^2)+10", new BigDecimal("3.00"), new BigDecimal("4.00"),
+            Tabla.imprimir(Biseccion.biseccion("(e^(7-4x))-(x^2)+10", new BigDecimal("3.00"), new BigDecimal("4.00"),
                 new BigDecimal("0.00005")));
         } catch (Exception e) {
             System.err.println(e);
         }
-        System.out.println("fin");
     }
+}
+
+public class Tabla {
+
+    public static void imprimir(QxGenericBean tabla){
+        
+        String[] columnas = tabla.getString("COLUMNAS").split(", ");
+        StringBuilder formatoImpresion = new StringBuilder();
+        QxGenericBean lastFila = tabla.getListQxBean("FILAS").get(tabla.getInt("MAX_ITERACION"));
+        
+        formatoImpresion.append("\n");
+        for (String columna : columnas){
+            if (lastFila.getString(columna).length() < columna.length()) {
+                formatoImpresion.append(" | %" + columna.length() + "s" );
+            } else {
+                formatoImpresion.append(" | %" + (lastFila.getString(columna).length()+4+ "s" ));
+            }
+        }
+        formatoImpresion.append("\n");
+
+        System.out.printf(formatoImpresion.toString(), (Object[]) columnas);
+        String[] valores = new String[columnas.length];
+        for (QxGenericBean fila : tabla.getListQxBean("FILAS")) {
+            int i = 0;
+            while (i < columnas.length){
+                valores[i] = fila.getString(columnas[i]);
+                i++;
+            }
+            System.out.printf(formatoImpresion.toString(), (Object[]) valores);
+        }
+        System.out.println(tabla.getString("MENSAJE"));
+    }
+
 }
