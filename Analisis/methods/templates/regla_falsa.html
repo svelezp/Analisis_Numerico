@@ -1,0 +1,22 @@
+{% extends 'base.html' %}
+
+{% block title %}Regla Falsa{% endblock %}
+
+{% block content %}
+<h1>Regla Falsa</h1>
+
+<form action="" class="form_busquedas" , method="post">
+
+    {% csrf_token %}
+    {{ form }}
+
+    <button type="submit" id="btnEnviar" class="button">Calcular</button>
+
+</form>
+
+<div>
+    {% if resultado %}
+    <p>El resultado es: {{ resultado }}</p>
+    {% endif %}
+</div>
+{% endblock %}

@@ -1,0 +1,84 @@
+<!-- templates/base.html -->
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Mi Sitio{% endblock %}</title>
+</head>
+
+<body>
+    <header>
+        <h1>{%block titulo %}Bienvenido{% endblock%}</h1>
+        <!-- Navegación, logo, etc. -->
+    </header>
+    <sub>
+        <h2>Porfavor, elija el metodo que desea usar</h2>
+    </sub>
+    <nav>
+        <!-- Menú de navegación -->
+        <div>
+            <a href="{% url 'about' %}">Ir a la página Acerca de</a>
+        </div>
+        <div>
+            <a href="{% url 'busquedas_incrementales' %}">Busquedas incrementales</a>
+        </div>
+        <div>
+            <a href="{% url 'biseccion' %}">Biseccion</a>
+        </div>
+        <div>
+            <a href="{% url 'regla_falsa' %}">Regla falsa</a>
+        </div>
+        <div>
+            <a href="{% url 'punto_fijo' %}">Punto fijo</a>
+        </div>
+        <div>
+            <a href="{% url 'raices_multiples' %}">Raices multiples</a>
+        </div>
+        <div>
+            <a href="{% url 'newton' %}">Newton</a>
+        </div>
+        <div>
+            <a href="{% url 'secante' %}">Secante</a>
+        </div>
+
+        <div>
+            <a href="{% url 'gauss' %}">Gauss</a>
+        </div>
+        <div>
+            <a href="{% url 'gauss_parcial' %}">Gauss Parcial</a>
+        </div>
+        <div>
+            <a href="{% url 'lu' %}">Factorizacion LU</a>
+        </div>
+        <div>
+            <a href="{% url 'crout' %}">Crout</a>
+        </div>
+        <div>
+            <a href="{% url 'cholesky' %}">Cholesky</a>
+        </div>
+        <div>
+            <a href="{% url 'doolittle' %}">Doolittle</a>
+        </div>
+        <div>
+            <a href="{% url 'jacobi' %}">Jacobi</a>
+        </div>
+        <div>
+            <a href="{% url 'gauss_seidel' %}">Gauss Seidel</a>
+        </div>
+
+    </nav>
+
+    <main>
+        {% block content %}
+        {% endblock %}
+    </main>
+
+    <footer>
+        <p>© 2024 Metodos de analisis. Todos los derechos reservados.</p>
+    </footer>
+</body>
+
+</html>
