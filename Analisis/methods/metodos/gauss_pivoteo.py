@@ -1,66 +1,64 @@
 import numpy as np
 
 
-def gauss_partial_pivot(a, b):
+def gauss_pivoteo(a, b, n):
+    # Se crea la matriz aumentada
     ab = to_aug(a, b)
-    assert a.shape[0] == a.shape[1]
-    res = []
-    res.append(np.copy(ab).tolist())
-    size = a.shape[0]
-
-    # Stages
-    for k in range(0, size - 1):
-        partial_pivot(ab, k)
-        # Compute multiplier for row in stage.
-        for i in range(k + 1, size):
-            multiplier = ab[i][k] / ab[k][k]
-            for j in range(k, size + 1):
-                ab[i][j] = ab[i][j] - (multiplier * ab[k][j])
-        res.append(np.copy(ab).tolist())
-    x = regressive_substitution(ab)
-    return res, x
+    # Primer loop, numero de etapas K
+    for k in range(n - 1):
+        ab = pivoteo(ab, n, k)
+        # Segundo loop, numero de filas i
+        for i in range(k + 1, n):
+            # Se calcula el multiplicador
+            multiplicador = ab[i][k] / ab[k][k]
+            # Tercer loop, numero de columnas j
+            for j in range(k, n + 1):
+                # Se realiza la operacion de eliminacion a base del multiplicador
+                ab[i][j] -= multiplicador * ab[k][j]
+    xvalues = regressive_substitution(ab, n)
+    return ab, xvalues
 
 
 def to_aug(a, b):
+    # Se convierte la matriz a en una matriz aumentada
     return np.column_stack((a, b))
 
 
-def regressive_substitution(ab, labels=None):
-    size = ab.shape[0]
-    assert ab.shape[1] == size + 1
-
-    solutions = np.zeros(size, dtype=np.float64)
-    solutions[size - 1] = ab[size - 1][size] / ab[size - 1][size - 1]
-
-    # Loop backwards
-    for i in range(size - 2, -1, -1):
-        accum = 0
-        for p in range(i + 1, size):
-            accum += ab[i][p] * solutions[p]
-        solutions[i] = (ab[i][size] - accum) / ab[i][i]
-
-    # Update the labels and assign its values
-    labeled_xs = np.zeros(size)
-    if labels is not None:
-        for i, v in enumerate(labels):
-            labeled_xs[labels[i]] = solutions[i]
-        solutions = labeled_xs
-
-    return solutions
+def regressive_substitution(ab, n):
+    # Incializa el array de x con el numero de X de la matriz
+    x = np.zeros(n)
+    # Se calcula el valor de la primera x
+    x[n] = ab[n][n + 1] / ab[n][n]
+    # Loop de la sustitucion regresiva, decrementa cada vez en -1
+    for i in range(n - 1, 0, -1):
+        # Se inicializa la sumatoria
+        sumatoria = 0
+        for p in range(i + 1, n):
+            # Se multiplica los elementos de la fila por el x de p, es decir, por el x ya calculado
+            sumatoria += ab[i][p] * x[p]
+        # Se calcula el valor de x[i], correspondiente a las x distintas de xn, siendo n la ultima fila de la matriz
+        x[i] = (ab[i][n + 1] - sumatoria) / ab[i][i]
+    # Retorna el array de x
+    return x
 
 
-def partial_pivot(ab, k):
-    largest = abs(ab[k][k])
-    largest_row = k
-    size = ab.shape[0]
-
-    for r in range(k + 1, size):
-        current = abs(ab[r][k])
-        if current > largest:
-            largest = current
-            largest_row = r
-    if largest == 0:
-        raise Exception("Equation system does not have unique solution.")
+def pivoteo(ab, n, k):
+    # Se inicializa el mayor y la fila mayor
+    mayor = abs(ab[k][k])
+    fila_mayor = k
+    # Loop para encontrar en la columna k el mayor valor
+    for s in range(k + 1, n):
+        # Si el valor absoluto de la fila s y columna k es mayor al mayor actual
+        if abs(ab[s][k]) > mayor:
+            # Se actualiza el mayor y la fila mayor
+            mayor = abs(ab[s][k])
+            fila_mayor = s
+    # Si el mayor es 0, el sistema no tiene solucion unica
+    if mayor == 0:
+        return "El sistema no tiene solucion unica"
     else:
-        if largest_row != k:
-            ab[[k, largest_row]] = ab[[largest_row, k]]
+        # Si la fila mayor es distinta de k
+        if fila_mayor != k:
+            # Se intercambian las filas k y fila_mayor en la matriz aumentada
+            ab[[k, fila_mayor]] = ab[[fila_mayor, k]]
+        return ab
