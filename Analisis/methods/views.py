@@ -10,6 +10,7 @@ from .forms import (
     SecanteForm,
     JacobiForm,
     SeidelForm,
+    GaussSimpleForm,
 )
 import numpy as np
 from sympy import sympify, lambdify, symbols
@@ -23,6 +24,9 @@ from .metodos.punto_fijo import punto_fijo as CalculoPuntoFijo
 from .metodos.raices_multiples import raices_multiples as CalculoRaicesMultiples
 from .metodos.newton import newton as CalculoNewton
 from .metodos.secante import secante as CalculoSecante
+from .metodos.gauss_simple import gauss_simple as CalculoGauss
+from .metodos.gauss_pivoteo import gauss_partial_pivot as CalculoGaussPivoteo
+
 
 # Create your views here.
 
@@ -62,11 +66,11 @@ def biseccion(request):
     if request.method == "POST":
         form = BiseccionForm(request.POST)
         if form.is_valid():
-            xi = form.cleaned_data["Xi"]
-            xf = form.cleaned_data["Xf"]
-            funcion = form.cleaned_data["funcion"]
-            tolerancia = form.cleaned_data["tolerancia"]
-            niter = form.cleaned_data["NumeroIteraciones"]
+            xi = form.cleaned_data["xi"]
+            xf = form.cleaned_data["xs"]
+            funcion = form.cleaned_data["f"]
+            tolerancia = form.cleaned_data["tol"]
+            niter = form.cleaned_data["niter"]
 
             resultado = CalculoBiseccion(funcion, xi, xf, tolerancia, niter)
             data["resultado"] = str(resultado)
@@ -175,11 +179,54 @@ def secante(request):
 
 
 def gauss(request):
-    return render(request, "gauss.html")
+    data = {
+        "form": GaussSimpleForm(),
+    }
+    if request.method == "POST":
+        form = GaussSimpleForm(request.POST)
+        if form.is_valid():
+            aux = form.cleaned_data["aux"]
+            a = form.cleaned_data["a"]
+            b = form.cleaned_data["b"]
+            filasA = a.split(",")
+            filasB = b.split(",")
+            if (len(filasA) == aux) and (len(filasB) == aux):
+                # Convierte las matrices A y B en arrays de NumPy
+                matriz_lista = [list(map(float, fila.split())) for fila in filasA]
+                matriz_numpy = np.array(matriz_lista)
+                ind_lista = [list(map(float, fila.split())) for fila in filasB]
+                ind_numpy = np.array(ind_lista)
+                resultado = CalculoGauss(matriz_numpy, ind_numpy)
+                data["resultado"] = str(resultado)
+            else:
+                data["resultado"] = "Las dimensiones de las matrices no coinciden"
+    return render(request, "gauss.html", data)
 
 
 def gauss_parcial(request):
-    return render(request, "gauss_parcial.html")
+    data = {
+        "form": GaussSimpleForm(),
+    }
+
+    if request.method == "POST":
+        form = GaussSimpleForm(request.POST)
+        if form.is_valid():
+            aux = form.cleaned_data["aux"]
+            a = form.cleaned_data["a"]
+            b = form.cleaned_data["b"]
+            filasA = a.split(",")
+            filasB = b.split(",")
+            if len(filasA) == aux:
+                # Convierte las matrices A y B en arrays de NumPy
+                matriz_lista = [list(map(float, fila.split())) for fila in filasA]
+                matriz_numpy = np.array(matriz_lista)
+                ind_lista = [list(map(float, fila.split())) for fila in filasB]
+                ind_numpy = np.array(ind_lista)
+                resultado = CalculoGaussPivoteo(matriz_numpy, ind_numpy)
+                data["resultado"] = str(resultado)
+            else:
+                data["resultado"] = "Las dimensiones de las matrices no coinciden"
+    return render(request, "gauss_parcial.html", data)
 
 
 def lu(request):

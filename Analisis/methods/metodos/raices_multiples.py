@@ -1,76 +1,47 @@
-import sympy as sm
-import math
+def raices_multiples(x0, funcion, df1, df2, tolerancia, niter):
+    x = x0
+    # Se evalua la funcion
+    f = eval(funcion)
+    # Se calcula la derivada
+    df1 = eval(df1)
+    # Se calcula la segunda derivada
+    df2 = eval(df2)
+    # Se inicia el contador
+    contador = 1
+    # Se calcula el error
+    error = tolerancia + 1
+    # Mientras el error sea mayor a la tolerancia, la funcion sea diferente de 0 y el contador sea menor al numero de iteraciones
+    while f != 0 and error > tolerancia and contador < niter:
+        if df1 == 0:
+            return f"{x0} es una posible raiz multiple"
+        # Se calcula el denominador
+        denominador = df1**2 - f * df2
 
-x = sm.Symbol("x")
+        if denominador == 0:
+            return f"{x0} es una posible raiz multiple"
 
+        # Se calcula el valor de el siguiente x
+        x1 = x0 - f * df1 / denominador
 
-def raices_multiples(x0, f, df, df2, tol, niter):
-    X0 = x0
-    Tol = tol
-    Niter = niter
-    Fun = f
+        # Se calcula el error absoluto
+        error = abs(x1 - x0)
 
-    # print("derivate Function df:")
-    df = df
-    df2 = df2
-    res2 = "nan"
-    fn = []
-    xn = []
-    E = []
-    N = []
-    x = X0
-    d1 = []
-    d2 = []
-    res = []
-    # f=eval(Fun)
-    # derivada=eval(df)
-    # derivada2=eval(df2)
-    x = X0
-    f = eval(Fun)
-    x = X0
-    derivada = eval(df)
-    x = X0
-    derivada2 = eval(df2)
-    c = 0
-    Error = 100
-    fn.append(f)
-    d1.append(derivada)
-    d2.append(derivada2)
-    xn.append(x)
-    E.append(Error)
-    N.append(c)
+        # Se remplaza el valor de x0 por el nuevo x
+        x0 = x1
 
-    while Error > Tol and derivada != 0 and c < Niter:
-        # cálculo de x y los términos necesarios para calcular X desde el método de Newthon
-        arriba = f * derivada
-        abajo = ((derivada) ** 2) - ((f) * (derivada2))
-        x = x - (arriba / abajo)
-        # derivada=eval(df)
-        # f=eval(Fun)
-        f = eval(Fun)
-        derivada = eval(df)
-        derivada2 = eval(df2)
-        fn.append(f)
-        d1.append(derivada)
-        d2.append(derivada2)
-        xn.append(x)
-        c = c + 1
-        Error = abs(xn[c] - xn[c - 1])
-        N.append(c)
-        E.append(Error)
+        # Se aumenta el contador
+        contador += 1
+
+        # Se evaluan las funciones con el nuevo x
+        x = x0
+        f = eval(funcion)
+        df1 = eval(df1)
+        df2 = eval(df2)
     if f == 0:
-        s = x
-        res2 = (s, "es raiz de f(x)")
-    elif Error < Tol:
-        s = x
-        res2 = (s, "es una aproximacion de un raiz de f(x) con una tolerancia", Tol)
-
+        return f"{x0} es raiz en la iteracion" + str(contador)
+    elif error < tolerancia:
+        return f"{x0} es una aproximacion a una raiz con una tolerancia de " + str(
+            tolerancia
+        )
     else:
-        s = x
-        res2 = ("Fracaso en ", Niter, " iteraciones ")
-
-    for i in range(0, len(N)):
-        res.append([N[i], xn[i], fn[i], E[i]])
-    for i in res:
-        print(i)
-    return res, res2
+        return f"No se encontro una raiz"

@@ -1,68 +1,66 @@
 import numpy as np
 
 
-def sustitucionRegresiva(Ab, n):
-    x = np.zeros(n)
+def gauss_partial_pivot(a, b):
+    ab = to_aug(a, b)
+    assert a.shape[0] == a.shape[1]
+    res = []
+    res.append(np.copy(ab).tolist())
+    size = a.shape[0]
 
-    n = n - 1
-
-    k = Ab[n - 1][n + 1] / Ab[n][n]
-
-    x[n] = Ab[n][n + 1] / Ab[n][n]
-
-    for i in range(n - 1, -1, -1):
-        sum = 0
-        for p in range(i + 1, n + 1):
-            k = x[p]
-            sum = sum + (Ab[i][p] * x[p])
-
-        x[i] = (Ab[i][n + 1] - sum) / Ab[i][i]
-
-    return x
-
-
-def pivoteoParcial(Ab, n):
-    # Para cada fila en AB
-    for i in range(0, n - 1, 1):
-        # columna desde diagonal i en adelante
-        columna = abs(Ab[i:, i])
-        max = np.argmax(columna)
-
-        # max no está en diagonal
-        if max != 0:
-            temporal = np.copy(Ab[i, :])
-            Ab[i, :] = Ab[max + i, :]
-            Ab[max + i, :] = temporal
-
-    return Ab
+    # Stages
+    for k in range(0, size - 1):
+        partial_pivot(ab, k)
+        # Compute multiplier for row in stage.
+        for i in range(k + 1, size):
+            multiplier = ab[i][k] / ab[k][k]
+            for j in range(k, size + 1):
+                ab[i][j] = ab[i][j] - (multiplier * ab[k][j])
+        res.append(np.copy(ab).tolist())
+    x = regressive_substitution(ab)
+    return res, x
 
 
-def eliminacionPivoteoParcial(Ab, n):
-
-    for k in range(n):
-
-        Ab = pivoteoParcial(Ab, n)
-
-        for i in range(k + 1, n):
-
-            if Ab[k][k] == 0:
-                print("División por 0, no es posible realizar eliminación Gaussiana")
-                return Ab
-                break
-
-            multiplicador = Ab[i][k] / Ab[k][k]
-
-            for j in range(k, n + 1):
-                Ab[i, j] = Ab[i, j] - multiplicador * Ab[k, j]
-
-    return Ab
+def to_aug(a, b):
+    return np.column_stack((a, b))
 
 
-def eliminacionGaussianaPivoteoParcial(A, b, n):
-    Ab = np.append(A, b, axis=1)
-    Ab = eliminacionPivoteoParcial(Ab, n)
-    x = sustitucionRegresiva(Ab, n)
-    ans = []
-    for i in range(1, 5):
-        ans.append("x" + str(i) + " = " + str(x[i - 1]))
-    return ans
+def regressive_substitution(ab, labels=None):
+    size = ab.shape[0]
+    assert ab.shape[1] == size + 1
+
+    solutions = np.zeros(size, dtype=np.float64)
+    solutions[size - 1] = ab[size - 1][size] / ab[size - 1][size - 1]
+
+    # Loop backwards
+    for i in range(size - 2, -1, -1):
+        accum = 0
+        for p in range(i + 1, size):
+            accum += ab[i][p] * solutions[p]
+        solutions[i] = (ab[i][size] - accum) / ab[i][i]
+
+    # Update the labels and assign its values
+    labeled_xs = np.zeros(size)
+    if labels is not None:
+        for i, v in enumerate(labels):
+            labeled_xs[labels[i]] = solutions[i]
+        solutions = labeled_xs
+
+    return solutions
+
+
+def partial_pivot(ab, k):
+    largest = abs(ab[k][k])
+    largest_row = k
+    size = ab.shape[0]
+
+    for r in range(k + 1, size):
+        current = abs(ab[r][k])
+        if current > largest:
+            largest = current
+            largest_row = r
+    if largest == 0:
+        raise Exception("Equation system does not have unique solution.")
+    else:
+        if largest_row != k:
+            ab[[k, largest_row]] = ab[[largest_row, k]]

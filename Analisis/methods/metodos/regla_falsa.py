@@ -1,53 +1,62 @@
-def reglaFalsa(f, t_error, xi, xs, tol, niter):
+import sympy as sp
+import numpy as np
+import math
+
+x = sp.symbols("x")
+
+
+def reglaFalsa(funcion, xi, xs, tolerancia, numero_iteraciones):
+    # Se evalua la funcion en xi y xs
     x = xi
-    fxinf = eval(f)
+    fi = eval(funcion)
+    print(fi)
     x = xs
-    res2 = "nan"
-    fxsup = eval(f)
-    resultados = []  # matriz para guardar resultados
-
-    # Se verifica si alguno de los límites del intervalo es raíz
-    if fxinf == 0:
-        res2 = (xi, " es raiz")
-    elif fxsup == 0:
-        res2 = (xs, " es raiz")
-    elif fxinf * fxsup < 0:
-        # Si ninguno de los extremos es raíz, se verifica el cambio de signo
-
-        # Se calcula el punto medio con la fórumla de la regla falsa y se almacena la función evaluada en ese punto, el error y el niter.
-        xm = xi - ((fxinf * (xs - xi)) / float(fxsup - fxinf))
+    fs = eval(funcion)
+    print(fs)
+    # Si f(xi) = 0 entonces xi es raiz de f(x)
+    if fi == 0:
+        return xi, "es raiz de f(x)"
+    # Si f(xs) = 0 entonces xs es raiz de f(x)
+    elif fs == 0:
+        return xs, "es raiz de f(x)"
+    # Si f(xi) * f(xs) < 0 entonces existe al menos una raiz en el intervalo [xi, xs]
+    elif fi * fs < 0:
+        # Se calcula el punto medio del intervalo con la formula de regla falsa
+        xm = xi - (fi * (xs - xi)) / (fs - fi)
         x = xm
-        fxm = eval(f)
+        # Se evalua la funcion en xm
+        fm = eval(funcion)
         contador = 1
-        error = float(tol) + 1
-        resultados.append([contador, xi, xs, xm, fxm, "nan"])
-        while fxm != 0 and error > tol and contador < niter:
-            if fxinf * fxm < 0:
-                # Si hay un camnbio de signo entre el f(Xm) y f(xi), Xs pasa a ser el punto medio
+        error = tolerancia + 1
+        # Mientras el error sea mayor que la tolerancia y f(xm) sea diferente de 0 y el contador sea menor que el numero de iteraciones
+        while error > tolerancia and fm != 0 and contador < numero_iteraciones:
+            # Si f(xi) * f(xm) < 0 entonces la raiz se encuentra en el intervalo [xi, xm]
+            if fi * fm < 0:
                 xs = xm
-                fxsup = fxm
+                fs = fm
+            # Si f(xi) * f(xm) > 0 entonces la raiz se encuentra en el intervalo [xm, xs]
             else:
                 xi = xm
-                fxinf = fxm
-
-            # Se calcula de nuevo Xm y f(Xm) para esta iteración
-            temp = xm
-            xm = xi - ((fxinf * (xs - xi)) / float(fxsup - fxinf))
+                fi = fm
+            # Se guarda el valor anterior de xm
+            xaux = xm
+            # Se calcula el punto medio del intervalo con la formula de regla falsa
+            xm = xi - (fi * (xs - xi)) / (fs - fi)
             x = xm
-            fxm = eval(f)
-            # Dependiendo del tipo de error (relativo o absoluto) se calcula y se guarda en la tabla
-            if t_error == 1:
-                error = abs(xm - temp)
-            else:
-                error = abs((xm - temp) / xm)
+            # Se evalua la funcion en xm
+            fm = eval(funcion)
+            # Se calcula el error
+            error = abs(xm - xaux)
             contador += 1
-            resultados.append([contador, xi, xs, xm, fxm, error])
-        if fxm == 0:
-            res2 = "xm es raiz"
-        elif error <= tol:
-            res2 = (xm, " se aproxima a una raiz con una tolerancia de ", tol)
+        # Si f(xm) = 0 entonces xm es raiz de f(x)
+        if fm == 0:
+            return xm, "es raiz de f(x)"
+        # Si el error es menor que la tolerancia entonces xm es una aproximacion de una raiz con tolerancia
+        elif error < tolerancia:
+            return xm, "es una aproximacion de una raiz con tolerancia" + str(
+                tolerancia
+            )
         else:
-            res2 = "Maximo de iteraciones alcanzado"
+            return None, "Fracaso en " + str(numero_iteraciones) + " iteraciones"
     else:
-        res2 = "El intervalo es inadecuado"
-    return resultados, res2
+        return None, "El intervalo es inadecuado"

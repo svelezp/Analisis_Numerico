@@ -1,54 +1,44 @@
-def secante(x0, x1, f, tol, niter):
-    X0 = x0
-    X1 = x1
-    Tol = tol
-    Niter = niter
-    Fun = f
-    res = []
-    res2 = "nan"
-    fn = []
-    xn = []
-    E = []
-    N = []
-    # Se evalúa la función en x0 y x1
-    x = X0
-    f = eval(Fun)
-    x = X1
-    f1 = eval(Fun)
-    c = 0
-    Error = 100
-    fn.append(f)
-    fn.append(f1)
-    xn.append(X0)
-    xn.append(X1)
-    E.append(Error)
-    E.append(Error)
-    N.append(c)
-    c = c + 1
-    N.append(c)
-    while Error > Tol and f != 0 and c < Niter:
-        # Se calcula X con el método de la secante y se evalúa nuevamente en f
-        x = xn[c] - ((fn[c] * (xn[c] - xn[c - 1])) / (fn[c] - fn[c - 1]))
-        f = eval(Fun)
-        fn.append(f)
-        xn.append(x)
-        c = c + 1
-        Error = abs(xn[c] - xn[c - 1])
-        N.append(c)
-        E.append(Error)
+def secante(x0, x1, funcion, tol, niter):
+    x = x0
+    # Se evalua la funcion
+    f = eval(funcion)
     if f == 0:
-        s = x
-        res2 = (s, "es raiz de f(x)")
-    elif Error < Tol:
-        s = x
-        res2 = (s, "es una aproximacion de un raiz de f(x) con una tolerancia", Tol)
-
+        return f"{x0} es raiz de la funcion"
     else:
-        s = x
-        res2 = ("Fracaso en ", Niter, " iteraciones ")
 
-    for i in range(0, len(N)):
-        res.append([N[i], xn[i], fn[i], E[i]])
-    for i in res:
-        print(i)
-    return res, res2
+        x = x1
+        # Se evalua la funcion en x1
+        f1 = eval(funcion)
+        # Se inicia el contador
+        contador = 0
+        # Se calcula el error
+        error = tol + 1
+        # Se calcula el denominador
+        den = f1 - f
+        # Mientras el error sea mayor que la tolerancia, f1 sea diferente de 0, el denominador sea diferente de 0 y el contador sea menor que el numero de iteraciones
+        while error > tol and f1 != 0 and den != 0 and contador < niter:
+            # Se calcula el siguiente x
+            x2 = x1 - f1 * (x1 - x0) / den
+            # Se calcula el error
+            error = abs(x2 - x1)
+            # Se remplaza el valor de x0 por x1
+            x0 = x1
+            # Se remplaza el valor de la primera funcion por la segunda funcion
+            f = f1
+            # Se remplaza el valor de x1 por el nuevo x
+            x1 = x2
+            x = x1
+            # Se evalua la funcion en x1
+            f1 = eval(funcion)
+            # Se calcula el denominador
+            den = f1 - f
+            # Se aumenta el contador
+            contador += 1
+        if f1 == 0:
+            return f"{x1} es raiz de la funcion"
+        elif error < tol:
+            return f"{x1} es una aproximacion con una tolerancia de {tol}"
+        elif den == 0:
+            return f"{x1} es una posible raiz multiple"
+        else:
+            return f"Fracaso en {niter} iteraciones"

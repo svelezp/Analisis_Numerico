@@ -4,57 +4,27 @@ import math
 x = sm.Symbol("x")
 
 
-def punto_fijo(f, x0, tol, g, niter):
-
-    X0 = x0
-    Tol = tol
-    Niter = niter
-    Fun = f
-    g = g
-    res = []
-    res2 = "nan"
-    fn = []
-    xn = []
-    E = []
-    N = []
-    gx = []
-    x = X0
-    f = eval(Fun)
-    c = 0
-    Error = 100
-    fn.append(f)
-    xn.append(x)
-    E.append(Error)
-    N.append(c)
-
-    # Si la función evaluada en X0 es diferente de cero...
-    while Error > Tol and f != 0 and c < Niter:
-        # Se calcula x evaluando la función auxiliar con el x actual
-        x = eval(g)
-        gx.append(x)
-
-        # Se evalúa la función original con el nuevo x calculado a partir de G
-        fe = eval(Fun)
-        fn.append(fe)
-        xn.append(x)
-        c = c + 1
-        Error = abs(xn[c] - xn[c - 1])
-        N.append(c)
-        E.append(Error)
-    gx.append(x)
-    if fe == 0:
-        s = x
-        res2 = (s, "es raiz de f(x)")
-    elif Error < Tol:
-        s = x
-        res2 = (s, "es una aproximacion de un raiz de f(x) con una tolerancia", Tol)
-
+def punto_fijo(funcion, x0, tolerancia, g, numero_iteraciones):
+    x = x0
+    # Se evalua la funcion F en x0
+    f = eval(funcion)
+    Contador = 1
+    error = tolerancia + 1
+    # Mientras el error sea mayor que la tolerancia y f(x) sea diferente de 0 y el contador sea menor que el numero de iteraciones
+    while f != 0 and error > tolerancia and Contador < numero_iteraciones:
+        # Se evalua la funcion g en x
+        xn = eval(g)
+        x = xn
+        # Se evalua la funcion F en x
+        f = eval(funcion)
+        # Se calcula el error absoluto
+        error = abs(xn - x0)
+        # Se remplaza el valor de x0 por el x resultado de evaluar G en x0
+        x0 = xn
+        Contador += 1
+    if f == 0:
+        return x, "es raiz de f(x) en el intervalo " + str(Contador)
+    elif error < tolerancia:
+        return x, "es una aproximacion de una raiz con tolerancia " + str(tolerancia)
     else:
-        s = x
-        res2 = ("Fracaso en ", Niter, " iteraciones ")
-
-    for i in range(0, len(N)):
-        res.append([N[i], xn[i], fn[i], gx[i], E[i]])
-    for i in res:
-        print(i)
-    return res, res2
+        return None, "Fracaso en " + str(numero_iteraciones) + " iteraciones"

@@ -1,52 +1,32 @@
-def newton(f, df, x0, tol, niter):
-    X0 = x0
-    Tol = tol
-    Niter = niter
-    Fun = f
-    df = df
-    res = []
-    res2 = "nan"
-    fn = []
-    xn = []
-    E = []
-    N = []
-    x = X0
-    # f=eval(Fun)
-    f = eval(Fun)
-    derivada = eval(df)
-
-    # derivada=eval(df)
-    c = 0
-    Error = 100
-    fn.append(f)
-    xn.append(x)
-    E.append(Error)
-    N.append(c)
-    while Error > Tol and f != 0 and derivada != 0 and c < Niter:
-        # Se recalcula X según la fórmula de Newthon-Rhapson y se reevalúa en f y f' hasta que f sea igual a cero o cumpla las demás condiciones de parada
-        x = x - f / derivada
-        f = eval(Fun)
-        derivada = eval(df)
-        fn.append(f)
-        xn.append(x)
-        c = c + 1
-        Error = abs(xn[c] - xn[c - 1])  ##Decimales correctos
-        # Error=abs((xn[c]-xn[c-1])/xn[c]) ## Cifras significativas
-        N.append(c)
-        E.append(Error)
+def newton(f, df, x0, tol, numero_iteraciones):
+    x = x0
+    # Se evalua la funcion
+    f = eval(f)
+    # Se calcula la derivada
+    dif = eval(df)
+    # Se inicia el contador
+    Contador = 1
+    error = tol + 1
+    # Mientras el error sea mayor a la tolerancia, la funcion sea diferente de 0 y el contador sea menor al numero de iteraciones
+    while error > tol and f != 0 and Contador < numero_iteraciones:
+        # Se calcula el nuevo valor de x
+        x1 = x0 - (f / dif)
+        x = x1
+        # Se evalua la funcion con el nuevo x
+        f = eval(f)
+        # Se calcula la nueva derivada
+        dif = eval(df)
+        # Se calcula el error absoluto
+        error = abs(x1 - x0)
+        # Se remplaza el valor de x0 por el nuevo x
+        x0 = x1
+        # Se aumenta el contador
+        Contador += 1
     if f == 0:
-        s = x
-        res2 = (s, "es raiz de f(x)")
-    elif Error < Tol:
-        s = x
-        res2 = (s, "es una aproximacion de un raiz de f(x) con una tolerancia", Tol)
-
+        return f"{x0} es una raiz"
+    elif error < tol:
+        return f"{x0} es una aproximacion a una raiz con una tolerancia de {tol}"
+    elif dif == 0:
+        return f"{x0} es una posible raiz multiple"
     else:
-        s = x
-        res2 = ("Fracaso en ", Niter, " iteraciones ")
-
-    for i in range(0, len(N)):
-        res.append([N[i], xn[i], fn[i], E[i]])
-    for i in res:
-        print(i)
-    return res, res2
+        return f"No se encontro una raiz"
