@@ -25,19 +25,19 @@ def to_aug(a, b):
 
 
 def regressive_substitution(ab, n):
-    # Incializa el array de x con el numero de X de la matriz
+    # Inicializa el array de x con el número de X de la matriz
     x = np.zeros(n)
-    # Se calcula el valor de la primera x
-    x[n] = ab[n][n + 1] / ab[n][n]
-    # Loop de la sustitucion regresiva, decrementa cada vez en -1
-    for i in range(n - 1, 0, -1):
+    # Se calcula el valor de la última x (índice n-1)
+    x[n - 1] = ab[n - 1][n] / ab[n - 1][n - 1]
+    # Loop de la sustitución regresiva, decrementa cada vez en -1
+    for i in range(n - 2, -1, -1):
         # Se inicializa la sumatoria
         sumatoria = 0
         for p in range(i + 1, n):
             # Se multiplica los elementos de la fila por el x de p, es decir, por el x ya calculado
             sumatoria += ab[i][p] * x[p]
-        # Se calcula el valor de x[i], correspondiente a las x distintas de xn, siendo n la ultima fila de la matriz
-        x[i] = (ab[i][n + 1] - sumatoria) / ab[i][i]
+        # Se calcula el valor de x[i], correspondiente a las x distintas de xn, siendo n la última fila de la matriz
+        x[i] = (ab[i][n] - sumatoria) / ab[i][i]
     # Retorna el array de x
     return x
 
