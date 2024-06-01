@@ -27,6 +27,10 @@ from .metodos.secante import secante as CalculoSecante
 from .metodos.gauss_simple import gauss_simple as CalculoGauss
 from .metodos.gauss_pivoteo import gauss_pivoteo as CalculoGaussPivoteo
 from .metodos.LU import LU as CalculoLU
+from .metodos.crout import Crout as CalculoCrout
+from .metodos.doolittle import doolittle as CalculoDoolittle
+from .metodos.cholesky import cholesky as CalculoCholesky
+from .metodos.jacobi import jacobi as CalculoJacobi
 
 
 # Create your views here.
@@ -258,19 +262,109 @@ def lu(request):
 
 
 def crout(request):
-    return render(request, "crout.html")
+    data = {
+        "form": GaussSimpleForm(),
+    }
+    if request.method == "POST":
+        form = GaussSimpleForm(request.POST)
+        if form.is_valid():
+            n = form.cleaned_data["aux"]
+            a = form.cleaned_data["a"]
+            b = form.cleaned_data["b"]
+            filasA = a.split(",")
+            filasB = b.split(",")
+            if len(filasA) == n:
+                # Convierte las matrices A y B en arrays de NumPy
+                matriz_lista = [list(map(float, fila.split())) for fila in filasA]
+                matriz_numpy = np.array(matriz_lista)
+                ind_lista = [list(map(float, fila.split())) for fila in filasB]
+                ind_numpy = np.array(ind_lista)
+                resultado = CalculoCrout(matriz_numpy, ind_numpy, n)
+                data["resultado"] = str(resultado)
+            else:
+                data["resultado"] = "Las dimensiones de las matrices no coinciden"
+    return render(request, "crout.html", data)
 
 
 def cholesky(request):
-    return render(request, "cholesky.html")
+    data = {
+        "form": GaussSimpleForm(),
+    }
+    if request.method == "POST":
+        form = GaussSimpleForm(request.POST)
+        if form.is_valid():
+            n = form.cleaned_data["aux"]
+            a = form.cleaned_data["a"]
+            b = form.cleaned_data["b"]
+            filasA = a.split(",")
+            filasB = b.split(",")
+            if len(filasA) == n:
+                # Convierte las matrices A y B en arrays de NumPy
+                matriz_lista = [list(map(float, fila.split())) for fila in filasA]
+                matriz_numpy = np.array(matriz_lista)
+                ind_lista = [list(map(float, fila.split())) for fila in filasB]
+                ind_numpy = np.array(ind_lista)
+                resultado = CalculoCholesky(matriz_numpy, ind_numpy, n)
+                data["resultado"] = str(resultado)
+            else:
+                data["resultado"] = "Las dimensiones de las matrices no coinciden"
+    return render(request, "crout.html", data)
 
 
 def doolittle(request):
-    return render(request, "doolittle.html")
+    data = {
+        "form": GaussSimpleForm(),
+    }
+    if request.method == "POST":
+        form = GaussSimpleForm(request.POST)
+        if form.is_valid():
+            n = form.cleaned_data["aux"]
+            a = form.cleaned_data["a"]
+            b = form.cleaned_data["b"]
+            filasA = a.split(",")
+            filasB = b.split(",")
+            if len(filasA) == n:
+                # Convierte las matrices A y B en arrays de NumPy
+                matriz_lista = [list(map(float, fila.split())) for fila in filasA]
+                matriz_numpy = np.array(matriz_lista)
+                ind_lista = [list(map(float, fila.split())) for fila in filasB]
+                ind_numpy = np.array(ind_lista)
+                resultado = CalculoDoolittle(matriz_numpy, ind_numpy, n)
+                data["resultado"] = str(resultado)
+            else:
+                data["resultado"] = "Las dimensiones de las matrices no coinciden"
+    return render(request, "doolittle.html", data)
 
 
 def jacobi(request):
-    return render(request, "jacobi.html")
+    data = {
+        "form": JacobiForm(),
+    }
+    if request.method == "POST":
+        form = JacobiForm(request.POST)
+        if form.is_valid():
+            aux = form.cleaned_data["aux"]
+            a = form.cleaned_data["a"]
+            b = form.cleaned_data["b"]
+            init = form.cleaned_data["init"]
+            tol = form.cleaned_data["tol"]
+            n = form.cleaned_data["n"]
+            err_type = form.cleaned_data["err_type"]
+            filasA = a.split(",")
+            filasB = b.split(",")
+            if len(filasA) == aux:
+                # Convierte las matrices A y B en arrays de NumPy
+                matriz_lista = [list(map(float, fila.split())) for fila in filasA]
+                matriz_numpy = np.array(matriz_lista)
+                ind_lista = [list(map(float, fila.split())) for fila in filasB]
+                ind_numpy = np.array(ind_lista)
+                resultado = CalculoJacobi(
+                    matriz_numpy, ind_numpy, init, tol, n, err_type
+                )
+                data["resultado"] = str(resultado)
+            else:
+                data["resultado"] = "Las dimensiones de las matrices no coinciden"
+    return render(request, "jacobi.html", data)
 
 
 def gaussseidel(request):
