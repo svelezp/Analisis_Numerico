@@ -359,8 +359,9 @@ def jacobi(request):
                 matriz_numpy = np.array(matriz_lista)
                 ind_lista = [list(map(float, fila.split())) for fila in filasB]
                 ind_numpy = np.array(ind_lista)
+                x_init = np.full((aux, 1), init)
                 resultado = CalculoJacobi(
-                    matriz_numpy, ind_numpy, init, tol, n, err_type
+                    matriz_numpy, ind_numpy, x_init, tol, n, err_type
                 )
                 data["resultado"] = str(resultado)
             else:
@@ -390,8 +391,9 @@ def gaussseidel(request):
                 matriz_numpy = np.array(matriz_lista)
                 ind_lista = [list(map(float, fila.split())) for fila in filasB]
                 ind_numpy = np.array(ind_lista)
+                x_init = np.full((aux, 1), init)
                 resultado = CalculoGaussSeidel(
-                    matriz_numpy, ind_numpy, init, tol, n, err_type
+                    matriz_numpy, ind_numpy, x_init, tol, n, err_type
                 )
                 data["resultado"] = str(resultado)
             else:
