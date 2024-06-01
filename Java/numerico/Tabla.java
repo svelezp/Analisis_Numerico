@@ -1,4 +1,4 @@
-package numerico.src.main.java.com.numerico.app;
+ 
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -37,6 +37,17 @@ public class Tabla {
             System.out.printf(formatoImpresion.toString(), (Object[]) valores);
         }
         System.out.println(tabla.getString("MENSAJE"));
+    }
+
+    public static void imprimirMatriz(QxGenericBean tabla){
+        
+        StringBuilder formatoImpresion = new StringBuilder();
+        
+        for (QxGenericBean iteracion : tabla.getListQxBean("ITERACIONES")){
+            System.out.println("Etapa " + iteracion.getInt("NRO_ETAPA"));
+            Matriz.imprimirMatriz( (BigDecimal[][]) iteracion.getProperty("A"), (BigDecimal[]) iteracion.getProperty("b"));
+        }
+        System.out.println(tabla.getString("RESULTADOS"));
     }
 
 }

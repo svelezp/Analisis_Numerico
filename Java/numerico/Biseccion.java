@@ -1,4 +1,4 @@
-package com.numerico.app;
+ 
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -83,43 +83,10 @@ public class Biseccion {
 
     public static void main(String[] args) {
         try {
-            Tabla.imprimir(Biseccion.biseccion("(e^(7-4x))-(x^2)+10", new BigDecimal("3.00"), new BigDecimal("4.00"),
+            Tabla.imprimir(biseccion("(e^(7-4x))-(x^2)+10", new BigDecimal("3.00"), new BigDecimal("4.00"),
                 new BigDecimal("0.00005")));
         } catch (Exception e) {
             System.err.println(e);
         }
     }
-}
-
-public class Tabla {
-
-    public static void imprimir(QxGenericBean tabla){
-        
-        String[] columnas = tabla.getString("COLUMNAS").split(", ");
-        StringBuilder formatoImpresion = new StringBuilder();
-        QxGenericBean lastFila = tabla.getListQxBean("FILAS").get(tabla.getInt("MAX_ITERACION"));
-        
-        formatoImpresion.append("\n");
-        for (String columna : columnas){
-            if (lastFila.getString(columna).length() < columna.length()) {
-                formatoImpresion.append(" | %" + columna.length() + "s" );
-            } else {
-                formatoImpresion.append(" | %" + (lastFila.getString(columna).length()+4+ "s" ));
-            }
-        }
-        formatoImpresion.append("\n");
-
-        System.out.printf(formatoImpresion.toString(), (Object[]) columnas);
-        String[] valores = new String[columnas.length];
-        for (QxGenericBean fila : tabla.getListQxBean("FILAS")) {
-            int i = 0;
-            while (i < columnas.length){
-                valores[i] = fila.getString(columnas[i]);
-                i++;
-            }
-            System.out.printf(formatoImpresion.toString(), (Object[]) valores);
-        }
-        System.out.println(tabla.getString("MENSAJE"));
-    }
-
 }
