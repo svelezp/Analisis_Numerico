@@ -31,6 +31,7 @@ from .metodos.crout import Crout as CalculoCrout
 from .metodos.doolittle import doolittle as CalculoDoolittle
 from .metodos.cholesky import cholesky as CalculoCholesky
 from .metodos.jacobi import jacobi as CalculoJacobi
+from .metodos.gauss_seidel import gauss_seidel as CalculoGaussSeidel
 
 
 # Create your views here.
@@ -368,4 +369,31 @@ def jacobi(request):
 
 
 def gaussseidel(request):
-    return render(request, "gauss_seidel.html")
+    data = {
+        "form": JacobiForm(),
+    }
+    if request.method == "POST":
+        form = JacobiForm(request.POST)
+        if form.is_valid():
+            aux = form.cleaned_data["aux"]
+            a = form.cleaned_data["a"]
+            b = form.cleaned_data["b"]
+            init = form.cleaned_data["init"]
+            tol = form.cleaned_data["tol"]
+            n = form.cleaned_data["n"]
+            err_type = form.cleaned_data["err_type"]
+            filasA = a.split(",")
+            filasB = b.split(",")
+            if len(filasA) == aux:
+                # Convierte las matrices A y B en arrays de NumPy
+                matriz_lista = [list(map(float, fila.split())) for fila in filasA]
+                matriz_numpy = np.array(matriz_lista)
+                ind_lista = [list(map(float, fila.split())) for fila in filasB]
+                ind_numpy = np.array(ind_lista)
+                resultado = CalculoGaussSeidel(
+                    matriz_numpy, ind_numpy, init, tol, n, err_type
+                )
+                data["resultado"] = str(resultado)
+            else:
+                data["resultado"] = "Las dimensiones de las matrices no coinciden"
+    return render(request, "gauss_seidel.html", data)
