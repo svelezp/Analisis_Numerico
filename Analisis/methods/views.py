@@ -98,9 +98,8 @@ def reglafalsa(request):
             funcion = form.cleaned_data["f"]
             tolerancia = form.cleaned_data["tol"]
             niter = form.cleaned_data["niter"]
-            t_error = form.cleaned_data["t_error"]
 
-            resultado = CalculoReglaFalsa(funcion, t_error, xi, xs, tolerancia, niter)
+            resultado = CalculoReglaFalsa(funcion, xi, xs, tolerancia, niter)
             data["resultado"] = str(resultado)
         else:
             print("Formulario no valido")

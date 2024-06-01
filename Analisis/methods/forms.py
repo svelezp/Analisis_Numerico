@@ -53,15 +53,10 @@ class BiseccionForm(forms.Form):
 
 
 class ReglaFalsaForm(forms.Form):
-    OPCIONES_ERROR = [
-        ("1", "Error absoluto"),
-        ("2", "Error relativo"),
-    ]
 
     f = forms.CharField(label="Función f(x)")
     xi = forms.FloatField(label="Valor inicial xi")
     xs = forms.FloatField(label="Valor inicial xs")
-    t_error = forms.ChoiceField(choices=OPCIONES_ERROR, label="Tipo de Error")
     tol = forms.FloatField(label="Tolerancia")
     niter = forms.IntegerField(label="Número de iteraciones")
 
