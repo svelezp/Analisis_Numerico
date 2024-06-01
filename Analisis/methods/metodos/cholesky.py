@@ -3,31 +3,37 @@ import math
 
 
 def cholesky(A, b, n):
+    # Se inicializan las matrices L y U como una matriz identidad
     L = np.identity(n, dtype=np.float64)
     U = np.identity(n, dtype=np.float64)
+    # Se recorre la matriz A
     for k in range(0, n):
+        # Se inicializan la sumatoria1
         suma1 = 0
+        # Se calculan los elementos de la diagonal de la matriz L
         for p in range(0, k):
             suma1 += L[k][p] * U[p][k]
         L[k][k] = math.sqrt(A[k][k] - suma1)
 
+        # Se recorren los elementos de K+1 a N
         for i in range(k + 1, n):
             suma2 = 0
             for p in range(0, k):
+                # Sumatoria de la multiplicacion de la fila i de L por la columna k de U
                 suma2 += L[i][p] * U[p][k]
+            # Se calculan los elementos debajo de la diagonal de la matriz L
             L[i][k] = (A[i][k] - suma2) / U[k][k]
 
         for j in range(k + 1, n):
             suma3 = 0
             for p in range(0, k):
+                # Sumatoria de la multiplicacion de la fila k de L por la columna j de U
                 suma3 += L[k][p] * U[p][j]
+            # Se calculan los elementos arriba de la diagonal de la matriz U
             U[k][j] = (A[k][j] - suma3) / L[k][k]
+    # Se hallan los z con sustitucion progresiva, y posteriormente los x con sustitucion regresiva
     z = progressive_substitucion(L, b, n)
     x = regressive_substitution(U, z, n)
-    print("Los resultados son: ")
-    print(L)
-    print(U)
-    print(x)
     return "El resultado es " + str(x)
 
 
